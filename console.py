@@ -114,10 +114,11 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """ Overrides the emptyline method of CMD """
         pass
+
     def do_create(self, args):
         """ Create an object of any class"""
         ignored_attrs = ('id', 'created_at', 'updated_at', '__class__')
-        class_name = ''
+        class_name = ''  # Define class_name here
         name_pattern = r'(?P<name>(?:[a-zA-Z]|_)(?:[a-zA-Z]|\d|_)*)'
         class_match = re.match(name_pattern, args)
         obj_kwargs = {}
@@ -133,7 +134,7 @@ class HBNBCommand(cmd.Cmd):
                 str_pattern,
                 float_pattern,
                 int_pattern
-            )
+        )
         for param in params:
             param_match = re.fullmatch(param_pattern, param)
             if param_match is not None:
@@ -152,9 +153,11 @@ class HBNBCommand(cmd.Cmd):
         if not class_name:
             print("** class name missing **")
             return
+
         elif class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
+
         if os.getenv('HBNB_TYPE_STORAGE') == 'db':
             if 'id' not in obj_kwargs:
                 obj_kwargs['id'] = str(uuid4())
@@ -165,6 +168,7 @@ class HBNBCommand(cmd.Cmd):
             new_instance = HBNBCommand.classes[class_name](**obj_kwargs)
             new_instance.save()
             print(new_instance.id)
+
         else:
             new_instance = HBNBCommand.classes[class_name]()
             for key, value in obj_kwargs.items():
