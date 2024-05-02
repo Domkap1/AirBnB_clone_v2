@@ -2,6 +2,10 @@
 """ Console Module """
 import cmd
 import sys
+import re
+import os
+from uuid import uuid4
+from datetime import datetime
 from models.base_model import BaseModel
 from models.__init__ import storage
 from models.user import User
@@ -122,7 +126,7 @@ class HBNBCommand(cmd.Cmd):
         if class_match is not None:
             class_name = class_match.group('name')
             params_str = args[len(class_name):].strip()
-            params = params_str.split('')
+            params = params_str.split(' ')
             str_pattern = r'(?P<t_str>"([^"]|\")*")'
             float_pattern = r'(?P<t_float>[-+]?\d+\.\d+)'
             int_pattern = r'(?P<t_int>[-+]?\d+)'
@@ -144,21 +148,21 @@ class HBNBCommand(cmd.Cmd):
                     if int_v is not None:
                         obj_kwargs[key_name] = int(int_v)
                     if str_v is not None:
-                         obj_kwargs[key_name] = str_v[1:-1].replace('_', ' ')
+                        obj_kwargs[key_name] = str_v[1:-1].replace('_', ' ')
             else:
                 class_name = args
             if not class_name:
                 print("** class name missing **")
                 return
             elif class_name not in HBNBCommand.classes:
-                print("** class does't exist **")
+                print("** class doesn't exist **")
                 return
             if os.getenv('HBNB_TYPE_STORAGE') == 'db':
-                if not hasattr(obj_kwargs, 'id'):
+                if 'id' not in obj_kwargs:
                     obj_kwargs['id'] = str(uuid4())
-                if not hasattr(obj_kwargs, created_at):
+                if 'created_at' not in obj_kwargs:
                     obj_kwargs['created_at'] = str(datetime.now())
-                if not hasattr(obj_kwargs, 'updated_at'):
+                if 'updated_at' not in obj_kwargs:
                     obj_kwargs['updated_at'] = str(datetime.now())
                 new_instance = HBNBCommand.classes[class_name](**obj_kwargs)
                 new_instance.save()
